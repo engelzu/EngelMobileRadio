@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">EngelMobile Radio</string>
+    <string name="title_activity_main">EngelMobile Radio</string>
+    <string name="package_name">com.engelmobile.radio</string>
+    <string name="custom_url_scheme">com.engelmobile.radio</string>
+</resources>

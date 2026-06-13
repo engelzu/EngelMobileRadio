@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerador de Ícones - EngelMobile Radio</title>
+    <style>
+        body { background: #111; color: #ffb300; font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+        h1 { color: #f9d976; }
+        .controls { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; margin: 20px 0; }
+        label { color: #ccc; font-size: 13px; }
+        input[type=color] { width: 40px; height: 30px; border: none; background: none; cursor: pointer; }
+        input[type=range] { width: 120px; }
+        button {
+            background: linear-gradient(135deg, #f9d976 0%, #e9b646 50%, #b8860b 100%);
+            color: #111; border: none; padding: 12px 28px;
+            font-size: 15px; font-weight: bold; border-radius: 4px;
+            cursor: pointer; letter-spacing: 2px;
+        }
+        button:disabled { opacity: 0.4; cursor: default; }
+        button:hover:not(:disabled) { filter: brightness(1.1); }
+        #status { color: #aaa; margin-top: 10px; font-size: 13px; }
+        #preview { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 20px; }
+        .icon-preview { background: #222; padding: 8px; border-radius: 8px; border: 1px solid #444; }
+        .icon-preview span { display: block; color: #888; font-size: 10px; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🎨 Gerador de Ícones — EngelMobile Radio</h1>
+    <p style="color:#aaa; font-size:13px;">Selecione o <strong>icone.png</strong> (sem fundo), ajuste as opções e clique em Gerar.</p>
+
+    <div class="controls">
+        <div>
+            <label>Cor do fundo:</label><br>
+            <input type="color" id="bgColor" value="#111111">
+        </div>
+        <div>
+            <label>Tamanho do ícone: <span id="scaleVal">90</span>%</label><br>
+            <input type="range" id="scale" min="60" max="100" value="90" oninput="document.getElementById('scaleVal').textContent=this.value">
+        </div>
+        <div>
+            <label>Cantos arredondados (maskable):</label><br>
+            <input type="range" id="radius" min="0" max="40" value="20"> <span id="radiusVal">20</span>%
+            <script>document.getElementById('radius').oninput = function(){ document.getElementById('radiusVal').textContent = this.value; }</script>
+        </div>
+    </div>
+
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <div>
+            <input type="file" id="fileInput" accept="image/png" style="display:none">
+            <button onclick="document.getElementById('fileInput').click()">📁 Selecionar icone.png</button>
+        </div>
+        <button onclick="generateAll()" id="genBtn" disabled>⚙️ Gerar e Baixar Todos os Ícones</button>
+    </div>
+
+    <!-- Preview ao vivo -->
+    <div style="margin: 20px auto; display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+        <div>
+            <p style="color:#aaa; font-size:12px; margin-bottom:4px;">Preview normal (192px)</p>
+            <canvas id="previewNormal" width="96" height="96" style="border-radius:4px; border:1px solid #333;"></canvas>
+        </div>
+        <div>
+            <p style="color:#aaa; font-size:12px; margin-bottom:4px;">Preview maskable (512px)</p>
+            <canvas id="previewMaskable" width="96" height="96" style="border-radius:50%; border:1px solid #333;"></canvas>
+        </div>
+    </div>
+
+    <div id="status">Selecione o arquivo icone.png para começar.</div>
+    <div id="preview"></div>
+
+    <script>
+        const sizes = [48, 72, 96, 128, 144, 152, 192, 256, 512, 1024];
+        let loadedImg = null;
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const img = new Image();
+                img.onload = function() {
+                    loadedImg = img;
+                    document.getElementById('genBtn').disabled = false;
+                    document.getElementById('status').textContent = `✅ Arquivo selecionado: ${file.name} (${img.width}×${img.height}px)`;
+                    updatePreview();
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Atualiza preview ao vivo quando mudam as configurações
+        ['bgColor','scale','radius'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updatePreview);
+        });
+
+        function updatePreview() {
+            if (!loadedImg) return;
+            drawIcon(loadedImg, 96, document.getElementById('previewNormal'), false);
+            drawIcon(loadedImg, 96, document.getElementById('previewMaskable'), true);
+        }
+
+        function drawIcon(img, size, canvas, maskable) {
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const bg = document.getElementById('bgColor').value;
+            const scale = parseInt(document.getElementById('scale').value) / 100;
+            const radiusPct = parseInt(document.getElementById('radius').value) / 100;
+
+            // Fundo
+            if (maskable) {
+                // Cantos arredondados para maskable
+                const r = size * radiusPct;
+                ctx.beginPath();
+                ctx.moveTo(r, 0);
+                ctx.lineTo(size - r, 0);
+                ctx.quadraticCurveTo(size, 0, size, r);
+                ctx.lineTo(size, size - r);
+                ctx.quadraticCurveTo(size, size, size - r, size);
+                ctx.lineTo(r, size);
+                ctx.quadraticCurveTo(0, size, 0, size - r);
+                ctx.lineTo(0, r);
+                ctx.quadraticCurveTo(0, 0, r, 0);
+                ctx.closePath();
+                ctx.fillStyle = bg;
+                ctx.fill();
+                ctx.clip();
+            } else {
+                ctx.fillStyle = bg;
+                ctx.fillRect(0, 0, size, size);
+            }
+
+            // Ícone centralizado com escala
+            const iconSize = size * scale;
+            const offset = (size - iconSize) / 2;
+            ctx.drawImage(img, offset, offset, iconSize, iconSize);
+        }
+
+        function generateAll() {
+            if (!loadedImg) return;
+            const preview = document.getElementById('preview');
+            preview.innerHTML = '';
+            document.getElementById('status').textContent = 'Gerando ícones...';
+
+            sizes.forEach(size => {
+                const canvas = document.createElement('canvas');
+                drawIcon(loadedImg, size, canvas, false);
+                downloadCanvas(canvas, `icon-${size}.png`);
+                addPreviewCard(canvas, `icon-${size}.png`);
+            });
+
+            // Maskable 512
+            const maskCanvas = document.createElement('canvas');
+            drawIcon(loadedImg, 512, maskCanvas, true);
+            downloadCanvas(maskCanvas, 'icon-512-maskable.png');
+            addPreviewCard(maskCanvas, 'icon-512-maskable.png (maskable)', true);
+
+            document.getElementById('status').textContent = `✅ ${sizes.length + 1} ícones gerados! Coloque-os na pasta icons/ do projeto.`;
+        }
+
+        function downloadCanvas(canvas, filename) {
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }, 'image/png');
+        }
+
+        function addPreviewCard(canvas, label, circle = false) {
+            const preview = document.getElementById('preview');
+            const div = document.createElement('div');
+            div.className = 'icon-preview';
+            const imgEl = document.createElement('img');
+            imgEl.src = canvas.toDataURL();
+            imgEl.width = 64;
+            imgEl.height = 64;
+            imgEl.style.borderRadius = circle ? '50%' : '4px';
+            imgEl.style.display = 'block';
+            const span = document.createElement('span');
+            span.textContent = label;
+            div.appendChild(imgEl);
+            div.appendChild(span);
+            preview.appendChild(div);
+        }
+    </script>
+</body>
+</html>

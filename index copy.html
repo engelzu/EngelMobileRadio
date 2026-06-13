@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Escute Rádios do Mundo Todo</title>
+    <meta name="description" content="Ouça as melhores rádios do mundo com um visual nostálgico dos anos 80!">
+    <meta property="og:title" content="Escute Rádios do Mundo Todo">
+    <meta property="og:description" content="Ouça as melhores rádios do mundo com um visual nostálgico dos anos 80!">
+    <meta property="og:image" content="https://engelradiomobile.netlify.app/icone.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffb300">
+    <link rel="apple-touch-icon" href="icone.png">
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --metal: linear-gradient(180deg, #444 0%, #222 50%, #111 100%);
+            --amber-light: radial-gradient(circle, #ffb300 0%, #e67e22 100%);
+            --led-red-fosco: #ff3333;
+            --acrylic: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 40%, rgba(0,0,0,0.1) 50%, rgba(255,255,255,0.05) 100%);
+        }
+
+        body {
+            background-color: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .hi-fi-frame {
+            width: 100%;
+            max-width: 480px;
+            box-sizing: border-box;
+            background: var(--metal);
+            padding: 12px;
+            border-radius: 4px;
+            border: 2px solid #333;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.2);
+            position: relative;
+            z-index: 1;
+            margin: 20px auto auto auto; /* Subido para diminuir a parte preta em cima */
+        }
+
+        /* Pés do Som */
+        .hi-fi-frame::before,
+        .hi-fi-frame::after {
+            content: '';
+            position: absolute;
+            bottom: -14px;
+            width: 60px;
+            height: 14px;
+            background: linear-gradient(90deg, #261c00 0%, #997314 20%, #d4a024 50%, #997314 80%, #261c00 100%);
+            border-radius: 1px 1px 6px 6px;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.9), inset 0 -4px 3px rgba(10,10,10,0.95); 
+            border: 1px solid #0a0a0a;
+            z-index: -1;
+        }
+        .hi-fi-frame::before { left: 40px; }
+        .hi-fi-frame::after { right: 40px; }
+
+        /* LED FOSCO CANTO SUPERIOR DIREITO */
+        .power-section {
+            display: flex; flex-direction: column; align-items: center;
+            font-size: 10px; color: #ccc; letter-spacing: 1px;
+            font-weight: bold;
+            font-family: 'Arial', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .led {
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle at 35% 35%, #550000 0%, #220000 70%, #110000 100%);
+            border-radius: 50%;
+            margin: 0 auto;
+            transition: all 0.4s ease;
+            box-shadow: 
+                inset 1px 1px 2px rgba(255,255,255,0.1),
+                inset -1px -1px 2px rgba(0,0,0,0.8),
+                0 1px 1px rgba(255,255,255,0.08);
+            position: relative;
+        }
+        /* Efeito de reflexo de luz na lente de plástico */
+        .led::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .playing .led {
+            background: radial-gradient(circle at 35% 35%, #ff4d4d 0%, #ff0000 65%, #990000 100%);
+            box-shadow: 
+                0 0 10px 3px rgba(255, 0, 0, 0.8),      /* Luz direta interna */
+                0 0 20px 8px rgba(255, 0, 0, 0.45),     /* Dispersão fosca ao redor */
+                inset 1px 1px 2px rgba(255,255,255,0.7), /* Brilho refrativo interno */
+                inset -1px -1px 3px rgba(0,0,0,0.6);
+        }
+        .led-label { 
+            font-size: 10px; 
+            color: #ffb300; 
+            text-transform: uppercase; 
+            margin-top: 4px; 
+            display: block;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* FITA CASSETE */
+        .cassette-slot {
+            background: #050505;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #333;
+            margin: 0 auto 12px auto;
+            max-width: 350px;
+            box-shadow: inset 0 0 20px #000;
+            display: flex;
+            justify-content: center;
+            perspective: 1000px;
+        }
+        .cassette {
+            width: 320px;
+            height: 200px;
+            background: linear-gradient(135deg, #2f2f2f 0%, #1c1c1c 50%, #111111 100%);
+            margin: 0 auto;
+            border-radius: 12px;
+            position: relative;
+            border-bottom: 2px solid #000;
+            border-right: 2px solid #000;
+            border-top: 2px solid #4a4a4a;
+            border-left: 2px solid #3a3a3a;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-origin: bottom center;
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform-style: preserve-3d;
+        }
+        .cassette-slot.ejected .cassette {
+            transform: rotateX(-30deg) translateZ(20px) translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .cassette::before {
+            content: '';
+            position: absolute;
+            top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border-radius: 8px;
+            border: 1px solid #000;
+            border-bottom: 1px solid #333;
+            border-right: 1px solid #333;
+            pointer-events: none;
+        }
+        /* Parafusos nos cantos */
+        .cassette::after {
+            content: '';
+            position: absolute;
+            top: 5px; left: 5px; width: 6px; height: 6px; background: #000; border-radius: 50%;
+            box-shadow: 304px 0 #000, 0 184px #000, 304px 184px #000;
+        }
+
+        .label {
+            width: 280px;
+            height: 120px;
+            background: linear-gradient(to bottom, #f0f0f0 0%, #f0f0f0 35%, #e67e22 35%, #e67e22 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        .label-lines {
+            position: absolute;
+            top: 25px; left: 10px; right: 10px;
+            border-top: 2px solid #333;
+        }
+        .label-title {
+            position: absolute;
+            top: 2px;
+            width: 100%;
+            font-size: 15px;
+            color: #00008b; /* dark blue pen ink */
+            font-family: 'Kalam', cursive;
+            font-weight: 700;
+        }
+        
+        .brand-logo {
+            position: absolute;
+            bottom: 5px; left: 10px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 24px;
+            color: #111;
+            display: flex;
+            align-items: center;
+        }
+        .brand-logo::before {
+            display: none;
+        }
+        .kte-logo-svg {
+            width: 24px;
+            height: 24px;
+            margin-right: 6px;
+        }
+        .brand-model {
+            position: absolute;
+            bottom: 10px; right: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #111;
+            font-weight: bold;
+        }
+
+        /* AREA INFERIOR DA FITA (TRAPÉZIO) E FUROS */
+        .tape-trapezoid {
+            position: absolute;
+            bottom: 8px; /* just inside the inner border */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 240px;
+            height: 32px;
+            background: linear-gradient(135deg, #222 0%, #111 100%);
+            border-top: 2px solid #3a3a3a;
+            border-left: 1px solid #2a2a2a;
+            border-right: 1px solid #000;
+            border-radius: 4px 4px 2px 2px;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.5), inset 0 0 10px #000;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+            z-index: 4;
+        }
+        .cassette-hole {
+            background: #020202;
+            box-shadow: inset 0 3px 5px rgba(0,0,0,1), 0 1px 0 rgba(255,255,255,0.15);
+            position: relative;
+        }
+        .cassette-hole::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: inherit;
+            background: radial-gradient(circle at center, #ffeaa8 0%, #ff8800 60%, #4a1900 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 8px rgba(255, 136, 0, 0.4);
+        }
+        .playing .cassette-hole::after {
+            opacity: 1;
+        }
+        /* Furos da fita cassete em vermelho (Modo Vermelho) */
+        body.vu-red-active .cassette-hole::after {
+            background: radial-gradient(circle at center, #ffebeb 0%, #ff1a1a 60%, #4a0000 100%);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 8px rgba(255, 0, 0, 0.5);
+        }
+        /* Furos da fita cassete em azul (Modo Azul) */
+        body.vu-blue-active .cassette-hole::after {
+            background: radial-gradient(circle at center, #e0f7ff 0%, #0088ff 60%, #002244 100%);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 8px rgba(0, 119, 255, 0.5);
+        }
+        .cassette-hole.circle {
+            width: 14px; height: 14px; border-radius: 50%;
+        }
+        .cassette-hole.square {
+            width: 16px; height: 14px; border-radius: 3px;
+        }
+
+        .tape-window {
+            width: 200px;
+            height: 50px;
+            background: #111;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 25px;
+            border: 3px solid #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            box-sizing: border-box;
+            box-shadow: inset 0 0 10px #000, 0 1px 0 rgba(255,255,255,0.3);
+            z-index: 2;
+            overflow: hidden;
+        }
+        /* Folha deslizante (slip sheet) cinza clara no fundo */
+        .tape-window::before {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0; left: 15px; right: 15px;
+            background: #d4d4d4;
+            z-index: 0;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+            border-radius: 2px;
+        }
+        
+        .tape-light {
+            position: absolute;
+            bottom: 0; left: 0; right: 0; top: 0;
+            background: 
+                radial-gradient(circle at 10% 110%, #fff7cc 0%, #ff8c00 25%, #8a3600 45%, transparent 60%),
+                radial-gradient(circle at 90% 110%, #fff7cc 0%, #ff8c00 25%, #8a3600 45%, transparent 60%);
+            opacity: 0;
+            border-radius: 22px;
+            z-index: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            mix-blend-mode: screen;
+        }
+        .playing .tape-light {
+            opacity: 0.85;
+            box-shadow: inset 0 -5px 15px rgba(255, 140, 0, 0.3);
+        }
+
+        .reel {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+        /* Engrenagem dentada da bobina branca */
+        .reel::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            box-shadow: inset 0 0 5px #000, 0 2px 5px rgba(0,0,0,0.5);
+            background: 
+                radial-gradient(circle, #000 20%, transparent 25%),
+                conic-gradient(
+                    #eee 0deg 40deg, #111 40deg 60deg, #eee 60deg 100deg, #111 100deg 120deg,
+                    #eee 120deg 160deg, #111 160deg 180deg, #eee 180deg 220deg, #111 220deg 240deg,
+                    #eee 240deg 280deg, #111 280deg 300deg, #eee 300deg 340deg, #111 340deg 360deg
+                );
+            box-sizing: border-box;
+            z-index: 2;
+        }
+        /* Rolo esquerdo (Cheio de fita) */
+        .reel:nth-child(2)::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95px;
+            height: 95px;
+            background: #2b170c;
+            border-radius: 50%;
+            z-index: 0;
+            box-shadow: 0 0 5px rgba(0,0,0,0.8), inset 0 0 8px rgba(0,0,0,0.5);
+            background-image: repeating-radial-gradient(
+                circle at center,
+                transparent,
+                transparent 1px,
+                rgba(0,0,0,0.2) 1px,
+                rgba(0,0,0,0.2) 2px
+            );
+        }
+        /* Rolo direito (Quase vazio) */
+        .reel:nth-child(3)::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 44px;
+            height: 44px;
+            background: #2b170c;
+            border-radius: 50%;
+            z-index: 0;
+            box-shadow: 0 0 3px rgba(0,0,0,0.8);
+        }
+        .playing .reel { animation: spin 3s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* VU METER COM FUNDO ÂMBAR E ESCALA DA IMAGEM */
+        .vu-panel { display: flex; gap: 20px; justify-content: center; margin-bottom: 10px; }
+        .vu-glass-container {
+            position: relative;
+            width: 140px;
+            height: 85px;
+            border: 2px solid #000;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #111;
+        }
+        .vu-meter {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 50% 110%, #fff0a8 0%, #ff9900 40%, #8a3600 80%, #220b00 100%);
+            position: relative;
+            opacity: 0.4;
+            transition: opacity 0.4s;
+        }
+        .playing .vu-meter { 
+            opacity: 1; 
+            box-shadow: inset 0 -15px 25px rgba(255, 200, 0, 0.4);
+            filter: brightness(1.4);
+        }
+        /* VU Vermelho Estilo Anos 80 (Quando a chave VU LIGHT estiver em OFF) */
+        .vu-meter.vu-red {
+            background: radial-gradient(ellipse at 50% 110%, #ffebeb 0%, #ff7373 40%, #b32424 80%, #400606 100%);
+        }
+        .playing .vu-meter.vu-red {
+            box-shadow: inset 0 -15px 25px rgba(255, 0, 0, 0.4);
+            filter: brightness(1.3);
+        }
+        
+        /* VU Azul Retro-Futurista */
+        .vu-meter.vu-blue {
+            background: radial-gradient(ellipse at 50% 110%, #e0f7ff 0%, #00a2ff 45%, #00448a 80%, #001122 100%);
+        }
+        .playing .vu-meter.vu-blue {
+            box-shadow: inset 0 -15px 25px rgba(0, 119, 255, 0.45);
+            filter: brightness(1.35);
+        }
+        
+        /* Temas de cores dinâmicos para chaves e fita cassete (Modo Vermelho) */
+        body.vu-red-active .toggle-lever:has(input:checked) {
+            background: #330000;
+            box-shadow: inset 0 0 15px #ff3333, inset 0 5px 10px rgba(0,0,0,0.6);
+        }
+        body.vu-red-active .toggle-lever:has(input:checked)::before {
+            background: radial-gradient(circle, #ff6666 0%, #ff0000 50%, #111 100%);
+            border-color: #ff3333;
+            box-shadow: 0 0 10px #ff3333;
+        }
+        body.vu-red-active .tape-light {
+            background: 
+                radial-gradient(circle at 10% 110%, #ffebeb 0%, #ff1a1a 25%, #8a0000 45%, transparent 60%),
+                radial-gradient(circle at 90% 110%, #ffebeb 0%, #ff1a1a 25%, #8a0000 45%, transparent 60%);
+        }
+        body.vu-red-active .playing .tape-light {
+            box-shadow: inset 0 -5px 15px rgba(255, 0, 0, 0.4);
+        }
+        
+        /* Fontes e rótulos ativos em vermelho no modo retrô */
+        body.vu-red-active .switch-container input:checked + label {
+            color: #ff3333;
+            text-shadow: 0 0 8px rgba(255, 51, 51, 0.65);
+        }
+        body.vu-red-active .lever-label {
+            color: #ff3333;
+        }
+        body.vu-red-active #updateModal .modal-content {
+            border-color: #ff3333;
+            box-shadow: 0 0 30px rgba(255, 51, 51, 0.2), inset 0 0 20px rgba(0,0,0,0.9);
+        }
+        body.vu-red-active #updateModal #updateAppBtn {
+            background: #ff3333;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(255, 51, 51, 0.3);
+        }
+
+        /* Temas de cores dinâmicos para chaves e fita cassete (Modo Azul) */
+        body.vu-blue-active .toggle-lever:has(input:checked) {
+            background: #001f3f;
+            box-shadow: inset 0 0 15px #0077ff, inset 0 5px 10px rgba(0,0,0,0.6);
+        }
+        body.vu-blue-active .toggle-lever:has(input:checked)::before {
+            background: radial-gradient(circle, #66b2ff 0%, #0066cc 50%, #111 100%);
+            border-color: #0077ff;
+            box-shadow: 0 0 10px #0077ff;
+        }
+        body.vu-blue-active .tape-light {
+            background: 
+                radial-gradient(circle at 10% 110%, #e0f7ff 0%, #0088ff 25%, #00448a 45%, transparent 60%),
+                radial-gradient(circle at 90% 110%, #e0f7ff 0%, #0088ff 25%, #00448a 45%, transparent 60%);
+        }
+        body.vu-blue-active .playing .tape-light {
+            box-shadow: inset 0 -5px 15px rgba(0, 119, 255, 0.4);
+        }
+        
+        /* Fontes e rótulos ativos em azul no modo retrô-futurista */
+        body.vu-blue-active .switch-container input:checked + label {
+            color: #00a2ff;
+            text-shadow: 0 0 8px rgba(0, 162, 255, 0.65);
+        }
+        body.vu-blue-active .lever-label {
+            color: #00a2ff;
+        }
+        body.vu-blue-active #updateModal .modal-content {
+            border-color: #00a2ff;
+            box-shadow: 0 0 30px rgba(0, 162, 255, 0.2), inset 0 0 20px rgba(0,0,0,0.9);
+        }
+        body.vu-blue-active #updateModal #updateAppBtn {
+            background: #00a2ff;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 162, 255, 0.3);
+        }
+
+        /* CHAVE DE 3 POSIÇÕES (VU COLOR) */
+        .toggle-lever-3pos {
+            position: relative;
+            width: 24px;
+            height: 48px;
+            background: #0a0a0a;
+            border-radius: 3px;
+            border: 2px solid #222;
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .toggle-lever-3pos input {
+            display: none;
+        }
+        .lever-track {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .pos-label {
+            flex: 1;
+            width: 100%;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .lever-knob {
+            position: absolute;
+            width: 14px;
+            height: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: 
+                repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255,255,255,0.15) 1px, rgba(255,255,255,0.15) 2px),
+                linear-gradient(90deg, #b8860b 0%, #f9d976 40%, #fff 60%, #e9b646 100%);
+            border-radius: 2px;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.9);
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            border-top: 2px solid #fff;
+            border-bottom: 2px solid #5c4300;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        /* Posição do knob da alavanca com base no input marcado */
+        .toggle-lever-3pos:has(#colorAmber:checked) .lever-knob {
+            top: 3px;
+            border-top: 2px solid #fff;
+            border-bottom: 2px solid #5c4300;
+            box-shadow: 0 4px 5px rgba(0,0,0,0.9), inset 0 2px 2px rgba(255,255,255,0.9);
+        }
+        .toggle-lever-3pos:has(#colorRed:checked) .lever-knob {
+            top: 15px;
+            border-top: 1.5px solid #fff;
+            border-bottom: 1.5px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.8);
+        }
+        .toggle-lever-3pos:has(#colorBlue:checked) .lever-knob {
+            top: 27px;
+            border-top: 2px solid #5c4300;
+            border-bottom: 2px solid #fff;
+            box-shadow: 0 -4px 5px rgba(0,0,0,0.9), inset 0 -2px 2px rgba(255,255,255,0.9);
+        }
+
+        /* Efeitos de brilho no fundo da caixinha de 3 posições */
+        .toggle-lever-3pos:has(#colorAmber:checked) {
+            background: #331500;
+            box-shadow: inset 0 0 15px #ffb300, inset 0 5px 10px rgba(0,0,0,0.6);
+        }
+        .toggle-lever-3pos:has(#colorRed:checked) {
+            background: #330000;
+            box-shadow: inset 0 0 15px #ff3333, inset 0 5px 10px rgba(0,0,0,0.6);
+        }
+        .toggle-lever-3pos:has(#colorBlue:checked) {
+            background: #001f3f;
+            box-shadow: inset 0 0 15px #0077ff, inset 0 5px 10px rgba(0,0,0,0.6);
+        }
+
+        .vu-scale {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 85'%3E%3Cg opacity='0.8'%3E%3Ctext x='8' y='15' font-family='Arial' font-size='10' font-weight='bold'%3E-%3C/text%3E%3Ctext x='125' y='15' font-family='Arial' font-size='10' font-weight='bold' fill='red'%3E+%3C/text%3E%3Cpath d='M15 65 A 65 65 0 0 1 125 65' fill='none' stroke='black' stroke-width='1'/%3E%3Cpath d='M98 41 A 65 65 0 0 1 125 65' fill='none' stroke='red' stroke-width='3'/%3E%3Cg font-family='Arial' font-size='7' font-weight='bold'%3E%3Ctext x='14' y='76'%3E20%3C/text%3E%3Ctext x='25' y='59'%3E10%3C/text%3E%3Ctext x='38' y='50'%3E7%3C/text%3E%3Ctext x='50' y='44'%3E5%3C/text%3E%3Ctext x='62' y='42'%3E3%3C/text%3E%3Ctext x='74' y='41'%3E2%3C/text%3E%3Ctext x='86' y='43'%3E1%3C/text%3E%3Ctext x='98' y='47'%3E0%3C/text%3E%3Ctext x='110' y='55' fill='red'%3E1%3C/text%3E%3Ctext x='118' y='62' fill='red'%3E2%3C/text%3E%3Ctext x='122' y='73' fill='red'%3E3%3C/text%3E%3C/g%3E%3Cg font-family='Arial' font-size='5'%3E%3Ctext x='28' y='46'%3E0%3C/text%3E%3Ctext x='42' y='37'%3E20%3C/text%3E%3Ctext x='62' y='31'%3E40%3C/text%3E%3Ctext x='82' y='32'%3E60%3C/text%3E%3Ctext x='100' y='38'%3E80%3C/text%3E%3Ctext x='112' y='46'%3E100%3C/text%3E%3C/g%3E%3Ctext x='115' y='78' font-family='Arial' font-size='9' font-weight='bold' opacity='0.6'%3EVU%3C/text%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 1;
+        }
+
+        .needle {
+            width: 1.5px;
+            height: 68px;
+            background: #ff0000;
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: rotate(-48deg);
+            z-index: 2;
+        }
+
+        .vu-label {
+            position: absolute;
+            top: 90%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000;
+            font-weight: bold;
+            font-size: 11px;
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        .vu-glass-container::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--acrylic);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* SENSIBILIDADE E VOLUME */
+        .sens-section { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            width: 320px;
+            margin: 0 auto 10px auto; 
+            box-sizing: border-box;
+        }
+        .switch-container { display: inline-flex; background: #111; padding: 3px; border-radius: 3px; border: 1px solid #444; }
+        .switch-container input { display: none; }
+        .switch-container label { 
+            font-size: 12px; 
+            color: #aaa; 
+            padding: 6px 16px; 
+            cursor: pointer; 
+            font-weight: bold;
+            font-family: 'Arial', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: all 0.2s ease;
+        }
+        .switch-container input:checked + label { 
+            background: #222; 
+            color: #ffb300; 
+            text-shadow: 0 0 8px rgba(255, 179, 0, 0.5); 
+            border-radius: 2px;
+        }
+
+        /* 3D LEVER SWITCH */
+        .lever-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .lever-label {
+            font-size: 12px;
+            color: #ffb300;
+            letter-spacing: 1.5px;
+            font-weight: bold;
+            font-family: 'Arial', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            margin-bottom: 2px;
+            text-align: center;
+            display: block;
+            width: 100%;
+        }
+        .toggle-lever {
+            position: relative;
+            width: 24px;
+            height: 44px;
+            background: #0a0a0a;
+            border-radius: 3px;
+            border: 2px solid #222;
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.9);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .toggle-lever:has(input:checked) {
+            background: #331500;
+            box-shadow: inset 0 0 15px #ffb300, inset 0 5px 10px rgba(0,0,0,0.6);
+        }
+        .toggle-lever::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: radial-gradient(circle, #444 0%, #111 100%);
+            border-radius: 50%;
+            border: 1px solid #555;
+            z-index: 0;
+            transition: all 0.3s ease;
+        }
+        .toggle-lever:has(input:checked)::before {
+            background: radial-gradient(circle, #ffb300 0%, #e67e22 50%, #111 100%);
+            border-color: #ffb300;
+            box-shadow: 0 0 10px #ffb300;
+        }
+        .toggle-lever input { display: none; }
+        .lever {
+            position: absolute;
+            width: 14px;
+            height: 22px;
+            bottom: 3px;
+            background: 
+                repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255,255,255,0.15) 1px, rgba(255,255,255,0.15) 2px),
+                linear-gradient(90deg, #b8860b 0%, #f9d976 40%, #fff 60%, #e9b646 100%);
+            border-radius: 2px;
+            box-shadow: 0 5px 5px rgba(0,0,0,0.9), inset 0 2px 3px rgba(255,255,255,0.9);
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            border-top: 2px solid #fff;
+            border-bottom: 2px solid #5c4300;
+            z-index: 1;
+        }
+        .toggle-lever input:checked + .lever {
+            bottom: 15px;
+            box-shadow: 0 -5px 5px rgba(0,0,0,0.9), inset 0 -2px 3px rgba(255,255,255,0.9);
+            border-top: 2px solid #5c4300;
+            border-bottom: 2px solid #fff;
+        }
+
+        /* CONTROLES E API */
+        .controls { display: flex; flex-direction: column; gap: 6px; }
+        .select-row { display: flex; gap: 10px; width: 100%; }
+        select { 
+            background: #111; 
+            color: #ffb300; 
+            border: 1px solid #444; 
+            padding: 12px 15px; 
+            font-family: 'Courier New', Courier, monospace; 
+            font-size: 14px;
+            flex: 1;
+            min-width: 0;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: linear-gradient(45deg, transparent 50%, #ffb300 50%), linear-gradient(135deg, #ffb300 50%, transparent 50%);
+            background-position: calc(100% - 20px) calc(1em + 2px), calc(100% - 15px) calc(1em + 2px);
+            background-size: 5px 5px, 5px 5px;
+            background-repeat: no-repeat;
+            transition: all 0.3s ease;
+        }
+        select:hover { border-color: #ffb300; }
+        select:focus {
+            border-color: #ffb300;
+            box-shadow: 0 0 8px rgba(255, 179, 0, 0.4);
+        }
+        select optgroup {
+            background: #222;
+            color: #ddd;
+            font-style: normal;
+            font-weight: bold;
+        }
+        select option {
+            background: #111;
+            color: #ffb300;
+            padding: 5px;
+        }
+        #favBtn {
+            background: #111;
+            color: #555;
+            border: 1px solid #444;
+            border-radius: 4px;
+            width: 46px;
+            flex-shrink: 0;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.3s;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #favBtn:hover { border-color: #ffb300; }
+        #favBtn.is-fav { color: #ffb300; text-shadow: 0 0 8px rgba(255, 179, 0, 0.8); }
+        /* TECLAS MECÂNICAS (PIANO KEYS) */
+        .deck-keys {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .deck-key {
+            flex: 1;
+            height: 28px;
+            background: 
+                repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.15) 1px, rgba(255,255,255,0.15) 2px),
+                linear-gradient(135deg, #f9d976 0%, #e9b646 25%, #f9d976 50%, #b8860b 75%, #f9d976 100%);
+            border: 1px solid #5c4300;
+            border-radius: 2px 2px 4px 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.9), inset 0 -2px 3px rgba(0,0,0,0.5);
+            cursor: pointer;
+            position: relative;
+            outline: none;
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top: 1px solid #fff;
+        }
+        .deck-key span {
+            color: #111;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+            transform: translateY(-1px);
+        }
+        .deck-key:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.4), inset 0 -1px 2px rgba(0,0,0,0.8);
+            border-top: 1px solid #a87900;
+        }
+        /* Efeito de tecla travada no PLAY */
+        .playing .deck-key.key-play {
+            transform: translateY(4px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 15px rgba(255, 179, 0, 0.5), inset 0 1px 2px rgba(255,255,255,0.4), inset 0 -10px 20px rgba(255, 179, 0, 0.8);
+            border-top: 1px solid #ffcc00;
+            border-bottom: 1px solid #ff8800;
+            background: 
+                repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.15) 1px, rgba(255,255,255,0.15) 2px),
+                linear-gradient(180deg, #d4a024 0%, #ff8c00 50%, #ffb300 100%);
+        }
+        .playing .deck-key.key-play span { color: #fff; text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); }
+        .top-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 350px;
+            margin: 0 auto 10px auto;
+        }
+        
+        .right-controls {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .brand-name { 
+            font-size: 14px; 
+            color: #ccc; 
+            margin: 0;
+            padding-bottom: 5px;
+            text-align: left; 
+            letter-spacing: 3px; 
+            font-weight: bold; 
+            font-family: 'Arial', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* PLACA DOURADA ENGELMOBILE */
+        .plaque-wrapper {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .engel-mobile-plaque {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+            
+            /* Brushed gold texture */
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(255,255,255,0.15) 1px,
+                    rgba(255,255,255,0.15) 2px
+                ),
+                linear-gradient(135deg, #f9d976 0%, #e9b646 25%, #f9d976 50%, #b8860b 75%, #f9d976 100%);
+            
+            /* 3D borders for the plaque */
+            border-top: 2px solid #fff5cc;
+            border-left: 2px solid #fff5cc;
+            border-bottom: 2px solid #5c4300;
+            border-right: 2px solid #5c4300;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.9), inset 0 0 10px rgba(184,134,11,0.6);
+            
+            /* Text styling */
+            font-family: 'Arial Black', sans-serif;
+            font-size: 20px;
+            font-style: italic;
+            font-weight: 900;
+            color: #1a1a1a;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            
+            /* Engraved text effect */
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.6), -1px -1px 0px rgba(0,0,0,0.8);
+            
+            position: relative;
+            z-index: 10;
+        }
+        .plaque-subtitle {
+            font-size: 10px;
+            font-style: italic;
+            font-family: 'Arial', sans-serif;
+            text-transform: none;
+            letter-spacing: 1px;
+            margin-left: 10px;
+            font-weight: normal;
+            color: #222;
+            text-shadow: none;
+        }
+        
+        /* Parafusos da placa - estilo Fenda (cabeça circular) */
+        .engel-mobile-plaque::before,
+        .engel-mobile-plaque::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 10px;
+            height: 10px;
+            transform: translateY(-50%) rotate(30deg);
+            background:
+                linear-gradient(to right, transparent 45%, #111 45%, #111 55%, transparent 55%),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(255,255,255,0.15) 1px,
+                    rgba(255,255,255,0.15) 2px
+                ),
+                linear-gradient(135deg, #f9d976 0%, #e9b646 25%, #f9d976 50%, #b8860b 75%, #f9d976 100%);
+            border-radius: 50%;
+            box-shadow: inset 1px 1px 2px #000, 1px 1px 1px rgba(255,255,255,0.5);
+        }
+        .engel-mobile-plaque::before { left: 10px; }
+        .engel-mobile-plaque::after { right: 10px; }
+
+        /* INFO BUTTON */
+        @keyframes pulse-amber {
+            0% { box-shadow: 0 0 2px #ffb300; border-color: rgba(255,179,0,0.5); color: rgba(255,179,0,0.7); }
+            50% { box-shadow: 0 0 12px 2px #ffcc00; border-color: #ffcc00; color: #fff; }
+            100% { box-shadow: 0 0 2px #ffb300; border-color: rgba(255,179,0,0.5); color: rgba(255,179,0,0.7); }
+        }
+        .info-btn {
+            background: #111;
+            color: #ffb300;
+            border: 1px solid #ffb300;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            cursor: pointer;
+            box-shadow: inset 0 0 5px #ffb300, 0 2px 4px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 14px;
+            animation: pulse-amber 1.5s infinite;
+        }
+        .info-btn:hover { background: #222; transform: scale(1.1); animation: none; box-shadow: 0 0 15px #ffcc00; color: #fff; border-color: #ffcc00; }
+        .info-btn:active { transform: scale(0.95); }
+        .share-btn {
+            background: #111;
+            color: #ffb300;
+            border: 1px solid #ffb300;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            box-shadow: inset 0 0 5px #ffb300, 0 2px 4px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .share-btn:hover { background: #222; transform: scale(1.1); box-shadow: 0 0 15px #ffcc00; color: #fff; border-color: #ffcc00; }
+        .share-btn:active { transform: scale(0.95); }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(3px);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: #111;
+            border: 2px solid #ffb300;
+            border-radius: 8px;
+            padding: 40px 25px;
+            text-align: center;
+            color: #eee;
+            position: relative;
+            max-width: 90%;
+            width: 360px;
+            box-shadow: 0 0 30px rgba(255, 179, 0, 0.2), inset 0 0 20px rgba(0,0,0,0.9);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .modal-content h3 { 
+            color: #ffb300; 
+            margin-top: 0; 
+            letter-spacing: 2px; 
+            font-family: 'Arial Black', sans-serif; 
+            font-size: 28px;
+            text-shadow: 2px 2px 5px #000;
+        }
+        .modal-content p { margin: 15px 0; font-size: 17px; line-height: 1.6; }
+        .modal-content a { font-size: 19px; font-weight: bold; }
+        .modal-content .phone { font-size: 22px; font-weight: bold; color: #fff; letter-spacing: 1px; }
+        .modal-close {
+            position: absolute; top: 10px; right: 10px;
+            background: transparent; border: none; color: #666;
+            font-weight: bold; cursor: pointer; font-size: 16px;
+        }
+        .modal-close:hover { color: #ffb300; }
+        .install-btn {
+            background: #ffb300;
+            color: #111;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 25px;
+            font-family: 'Arial Black', sans-serif;
+            text-transform: uppercase;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+            transition: all 0.2s;
+            display: none;
+            width: 100%;
+        }
+        .install-btn:hover { background: #e6a200; transform: scale(1.02); }
+        .install-btn:active { transform: scale(0.98); }
+        #installBtnTop {
+            display: block; /* Forçando aparecer para você ver o design */
+            background: 
+                repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.15) 1px, rgba(255,255,255,0.15) 2px),
+                linear-gradient(135deg, #f9d976 0%, #e9b646 25%, #f9d976 50%, #b8860b 75%, #f9d976 100%);
+            color: #111;
+            border: 1px solid #5c4300;
+            border-top: 1px solid #fff;
+            border-radius: 2px 2px 4px 4px;
+            font-size: 9px;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            padding: 4px 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.9), inset 0 -2px 3px rgba(0,0,0,0.5);
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+            transition: all 0.1s;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 6px; /* Empurra o botão para baixo para alinhar visualmente com o LED e a exclamação */
+        }
+        #installBtnTop:active { 
+            transform: translate(-50%, 2px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.4), inset 0 -1px 2px rgba(0,0,0,0.8);
+            border-top: 1px solid #a87900;
+        }
+
+        /* PAINEL DE BUSCA GLOBAL (RADIO GARDEN STYLE) */
+        .global-search-panel {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 5px;
+            box-shadow: inset 0 0 10px #000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .global-search-title {
+            color: #ffb300;
+            font-size: 11px;
+            text-align: center;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin: 0;
+            margin-bottom: 2px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+        .spinning-globe {
+            display: inline-block;
+            width: 22px; /* Tamanho do globo em pixels */
+            height: 22px;
+            object-fit: contain;
+            animation: spin-globe 4s linear infinite;
+        }
+        @keyframes spin-globe {
+            100% { transform: rotate(360deg); }
+        }
+        .search-controls {
+            display: flex;
+            gap: 8px;
+        }
+        .search-controls select {
+            font-size: 13px; /* Aumentado aproveitando o espaço ganho */
+            padding: 4px;
+            flex: 1;
+        }
+        .search-btn {
+            background: 
+                repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.15) 1px, rgba(255,255,255,0.15) 2px),
+                linear-gradient(135deg, #f9d976 0%, #e9b646 25%, #f9d976 50%, #b8860b 75%, #f9d976 100%);
+            color: #111;
+            border: 1px solid #5c4300;
+            border-top: 1px solid #fff;
+            border-radius: 2px 2px 4px 4px;
+            padding: 8px 12px;
+            font-weight: bold;
+            font-family: 'Arial', sans-serif;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.9), inset 0 -2px 3px rgba(0,0,0,0.5);
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .search-btn:hover { filter: brightness(1.1); }
+        .search-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.4), inset 0 -1px 2px rgba(0,0,0,0.8);
+            border-top: 1px solid #a87900;
+        }
+        .stations-list {
+            max-height: 60vh;
+            overflow-y: auto;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 4px;
+            padding: 5px;
+            display: none;
+            text-align: left;
+        }
+        .stations-list::-webkit-scrollbar { width: 8px; }
+        .stations-list::-webkit-scrollbar-track { background: #111; }
+        .stations-list::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        .station-card {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #222;
+            cursor: pointer;
+            transition: background 0.2s;
+            gap: 10px;
+        }
+        .station-card:hover { background: #222; border-color: #ffb300; }
+        .station-card img {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            object-fit: cover;
+            background: #000;
+            border: 1px solid #333;
+        }
+        .station-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .station-name {
+            color: #ffb300;
+            font-size: 13px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .station-tags {
+            color: #888;
+            font-size: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+        }
+        #stations-loading {
+            color: #ffb300;
+            font-size: 12px;
+            text-align: center;
+            display: none;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        /* OTIMIZAÇÃO PARA CELULAR NA HORIZONTAL (PAISAGEM) */
+        @media (max-width: 950px) and (orientation: landscape) {
+            body { 
+                overflow: hidden; 
+            }
+            .hi-fi-frame {
+                width: 98vw;
+                max-width: 850px;
+                height: 98vh;
+                max-height: 400px;
+                display: grid;
+                grid-template-columns: 290px minmax(0, 1fr); /* Força a coluna direita a não vazar da tela */
+                grid-template-rows: auto auto auto 1fr;
+                column-gap: 10px;
+                row-gap: 5px;
+                padding: 10px 15px;
+                margin: auto;
+                box-sizing: border-box;
+            }
+            
+            /* Coluna Esquerda */
+            .plaque-wrapper { grid-column: 1; grid-row: 1; margin: 0; align-self: start; justify-self: start; zoom: 0.75; }
+            .cassette-slot { grid-column: 1; grid-row: 2 / 5; margin: 0; align-self: center; justify-self: center; zoom: 0.8; }
+            
+            /* Coluna Direita */
+            .top-info-row { grid-column: 2; grid-row: 1; margin: 0; align-self: start; justify-content: center; zoom: 0.8; width: 100%; max-width: none; }
+            .brand-name { text-align: center; width: 100%; }
+            .right-controls { position: absolute; top: 15px; right: 20px; zoom: 0.8; width: auto; gap: 15px; justify-content: flex-end; }
+            #installBtnTop { position: static; transform: none; margin-top: 0; }
+            #installBtnTop:active { transform: translateY(2px); }
+            
+            .vu-panel { grid-column: 2; grid-row: 2; margin: 0; align-self: start; justify-content: center; gap: 15px; zoom: 0.95; }
+            .sens-section { grid-column: 2; grid-row: 3; margin: 0; align-self: start; justify-content: flex-start; gap: 20px; zoom: 0.7; }
+            
+            /* Controles (Search à esquerda, Play/Stop empilhados à direita) */
+            .controls { 
+                grid-column: 2; 
+                grid-row: 4; 
+                display: flex;
+                flex-direction: row;
+                align-items: stretch;
+                justify-content: space-between;
+                gap: 10px; 
+                zoom: 0.55; /* Encolhimento agressivo para caber em telas estreitas como iPhone SE */
+                align-self: start;
+                width: 100%;
+            }
+            .global-search-panel {
+                margin-bottom: 0;
+                flex: 1;
+                min-width: 0; /* Permite espremer sem vazar o grid */
+            }
+            .deck-keys {
+                flex-direction: column;
+                justify-content: space-between;
+                width: 120px;
+                gap: 8px;
+                margin-top: 5px;
+            }
+            .deck-key {
+                width: 100%;
+                height: 100%;
+                min-height: 35px;
+            }
+            
+            /* Aumentar Fontes (Paisagem) */
+            .global-search-title { font-size: 14px; }
+            #country-select, #category-select { font-size: 16px; padding: 6px; }
+            .search-btn { font-size: 14px; }
+            .deck-key span { font-size: 18px; font-weight: 900; letter-spacing: 2px; }
+            
+            /* Restaura medidas originais do VU (o zoom cuidará do tamanho real) */
+            .vu-glass-container { width: 140px; height: 85px; position: relative; }
+            .vu-scale { background-size: cover; }
+            .needle { height: 68px; bottom: -5px; }
+            .vu-label {
+                position: absolute;
+                top: 90%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: #000;
+                font-weight: bold;
+                font-size: 11px;
+                pointer-events: none;
+                z-index: 5;
+            }
+
+            
+            .hi-fi-frame::before { left: 10%; }
+            .hi-fi-frame::after { right: 10%; }
+        }
+
+        /* SIMULADOR DE ANÚNCIO ADMOB (OPÇÃO DO USUÁRIO) */
+        body.admob-active {
+            padding-bottom: 50px;
+        }
+        .admob-banner-placeholder {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            height: 50px;
+            background: #111;
+            border-top: 1px solid #333;
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            box-sizing: border-box;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.8);
+            font-family: 'Arial', sans-serif;
+        }
+        body.admob-active .admob-banner-placeholder {
+            display: flex;
+        }
+        .admob-badge {
+            background: #2b2b2b;
+            color: #ffb300;
+            border: 1px solid #ffb300;
+            border-radius: 3px;
+            padding: 1px 5px;
+            font-size: 8px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .admob-text {
+            color: #999;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin: 0 10px;
+            flex: 1;
+            text-align: left;
+        }
+        .admob-close {
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+        .admob-close:hover {
+            color: #ffb300;
+        }
+        
+        /* Oculta o banner em orientação paisagem devido ao espaço reduzido */
+        @media (max-width: 950px) and (orientation: landscape) {
+            body.admob-active {
+                padding-bottom: 0 !important;
+            }
+            .admob-banner-placeholder {
+                display: none !important;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="hi-fi-frame" id="mainApp">
+        
+        <!-- 1. PLACA DO NOME -->
+        <div class="plaque-wrapper">
+            <div class="engel-mobile-plaque">ENGELMOBILE<span class="plaque-subtitle">desde 1997</span></div>
+        </div>
+
+        <!-- 2 e 3: TEXTO DE COPYRIGHT e LED/BOTÃO -->
+        <div class="top-info-row">
+            <div class="brand-name"></div>
+            
+            <div class="right-controls">
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <button class="info-btn" onclick="openModal()" title="Sobre">!</button>
+                    <button class="share-btn" onclick="shareApp()" title="Compartilhar">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                    </button>
+                </div>
+                <button id="installBtnTop" onclick="installPWA()">INSTALAR APP</button>
+                <div class="power-section">
+                    <div class="led"></div>
+                    <span class="led-label">Running</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cassette-slot" id="cassetteSlot">
+            <div class="cassette" onclick="toggleEject()" style="cursor: pointer;" title="Clique para Abrir/Fechar o compartimento da fita">
+                <div class="label">
+                    <div class="label-title" id="tapeTitle">SELECIONE OU SINTONIZAR ABAIXO</div>
+                    <div class="label-lines"></div>
+                    <div class="tape-window">
+                        <div class="tape-light"></div>
+                        <div class="reel"></div>
+                        <div class="reel"></div>
+                    </div>
+                    <div class="brand-logo">
+                        <svg class="kte-logo-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 3.5 12 A 8.5 8.5 0 0 1 12 3.5" stroke="#ea4335" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M 12 3.5 A 8.5 8.5 0 0 1 20.5 12" stroke="#4285f4" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M 20.5 12 A 8.5 8.5 0 0 1 12 20.5" stroke="#34a853" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M 12 20.5 A 8.5 8.5 0 0 1 3.5 12" stroke="#fbbc05" stroke-width="2" stroke-linecap="round"/>
+                            <text x="12" y="15" font-family="'Arial Black', sans-serif" font-weight="900" font-size="8" fill="#5c5cfc" text-anchor="middle">EM</text>
+                        </svg>
+                        KTE
+                    </div>
+                    <div class="brand-model">- HIGH FIDELITY</div>
+                </div>
+                
+                <div class="tape-trapezoid">
+                    <div class="cassette-hole circle"></div>
+                    <div class="cassette-hole square"></div>
+                    <div style="width: 40px;"></div>
+                    <div class="cassette-hole square"></div>
+                    <div class="cassette-hole circle"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="vu-panel">
+            <div class="vu-glass-container">
+                <div class="vu-meter">
+                    <div class="vu-scale"></div>
+                    <div class="needle" id="needleL"></div>
+                    <span class="vu-label">L</span>
+                </div>
+            </div>
+            <div class="vu-glass-container">
+                <div class="vu-meter">
+                    <div class="vu-scale"></div>
+                    <div class="needle" id="needleR"></div>
+                    <span class="vu-label">R</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sens-section">
+            <!-- 3D LEVER (LOW VOL) -->
+            <div class="lever-wrapper" style="margin-left: 5px;">
+                <span class="lever-label">LOW VOL</span>
+                <label class="toggle-lever">
+                    <input type="checkbox" id="volReduce">
+                    <div class="lever"></div>
+                </label>
+            </div>
+
+            <!-- 3D LEVER (VU COLOR - 3 POSITIONS: AMBER, RED, BLUE) -->
+            <div class="lever-wrapper">
+                <span class="lever-label">VU LIGHT</span>
+                <div class="toggle-lever-3pos" id="vuColorSwitch">
+                    <input type="radio" name="vuColor" id="colorAmber" value="amber" checked>
+                    <input type="radio" name="vuColor" id="colorRed" value="red">
+                    <input type="radio" name="vuColor" id="colorBlue" value="blue">
+                    <div class="lever-track">
+                        <label for="colorAmber" class="pos-label pos-up" title="Âmbar (Cima)"></label>
+                        <label for="colorRed" class="pos-label pos-mid" title="Vermelho (Meio)"></label>
+                        <label for="colorBlue" class="pos-label pos-down" title="Azul (Baixo)"></label>
+                        <div class="lever-knob"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="switch-container" style="margin-right: 5px;">
+                <input type="radio" name="sens" id="sensLow" value="0.5">
+                <label for="sensLow">LOW</label>
+                <input type="radio" name="sens" id="sensMid" value="1.1" checked>
+                <label for="sensMid">MID</label>
+                <input type="radio" name="sens" id="sensHigh" value="2.3">
+                <label for="sensHigh">HIGH</label>
+            </div>
+        </div>
+
+        <div class="controls">
+            <!-- PAINEL DE BUSCA GLOBAL -->
+            <div class="global-search-panel">
+                <h4 class="global-search-title"><img src="globo.png" class="spinning-globe" alt="Globo"> BUSCA GLOBAL DE RÁDIOS</h4>
+                <div class="search-controls">
+                    <select id="country-select">
+                        <option value="">Qualquer País</option>
+                    </select>
+                    <select id="category-select">
+                        <option value="">Qualquer Gênero</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button id="search-stations-btn" class="search-btn" style="flex: 2;">Sintonizar</button>
+                    <button id="show-favs-btn" class="search-btn" style="flex: 2;" onclick="showFavoritesList()">Favoritos ⭐</button>
+                    <button id="favBtn" onclick="toggleFavorite()" title="Favoritar Rádio Atual" style="width: 40px; background: #111; color: #555; border: 1px solid #444; border-radius: 4px; font-size: 18px; cursor: pointer; transition: 0.3s; padding: 0;">★</button>
+                </div>
+            </div>
+            <div class="deck-keys">
+                <button class="deck-key key-play" onclick="playRadio()"><span>PLAY</span></button>
+                <button class="deck-key key-stop" onclick="stopTape()"><span>STOP</span></button>
+                <button class="deck-key key-close" onclick="closeApp()"><span>FECHAR</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL INFORMAÇÕES -->
+    <div id="infoModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">X</button>
+            <img src="icone.png" alt="Icone App" style="width: 70px; height: 70px; object-fit: contain; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.8); padding: 4px; box-sizing: border-box;">
+            <h3>EngelMobile</h3>
+            <p style="margin-top:10px; font-size:16px; color:#ccc;">Sistemas e Apps Personalizados</p>
+            <p style="margin-top:5px; margin-bottom: 20px;"><a href="https://engelmobile.netlify.app" target="_blank" style="color:#ffb300; text-decoration:none; font-size: 15px;">engelmobile.netlify.app</a></p>
+            <a href="https://wa.me/5551997403703" target="_blank" style="text-decoration: none;">
+                <p class="phone">📞 (51) 99740-3703</p>
+            </a>
+            <button id="installBtn" class="install-btn" onclick="installPWA()">Instalar App</button>
+            
+            <!-- SIMULADOR DE MONETIZAÇÃO (BANNER ADMOB) -->
+            <div style="margin: 20px 0 10px 0; display: flex; align-items: center; justify-content: space-between; background: #070707; padding: 10px 15px; border-radius: 6px; border: 1px solid #222;">
+                <div style="text-align: left;">
+                    <span style="font-size: 13px; color: #ffb300; font-weight: bold; display: block;">Simular Banner Google</span>
+                    <span style="font-size: 10px; color: #666; display: block; margin-top: 2px;">Veja como fica o app com anúncio</span>
+                </div>
+                <label class="toggle-lever" style="margin: 0; transform: scale(0.85); transform-origin: right center;">
+                    <input type="checkbox" id="toggleAdSim" onchange="toggleAdSimulation(this.checked)">
+                    <div class="lever"></div>
+                </label>
+            </div>
+            
+            <hr style="border: 0; border-top: 1px solid #333; margin: 25px 0 15px 0;">
+            <p style="font-size: 13px; color: #888; font-style: italic;">App Cortesia da EngelMobile.<br>Use com moderação.</p>
+        </div>
+    </div>
+
+    <!-- MODAL ALERTAS -->
+    <div id="alertModal" class="modal-overlay">
+        <div class="modal-content" style="width: 320px; padding: 30px 20px;">
+            <button class="modal-close" onclick="closeAlert()">X</button>
+            <h3 style="font-size: 22px; color: #ffb300; text-shadow: 1px 1px 2px #000;">Aviso</h3>
+            <p id="alertMessage" style="font-size: 16px; margin-top: 20px; line-height: 1.5;"></p>
+            <button onclick="closeAlert()" style="margin-top: 20px; background: #ffb300; color: #111; border: none; padding: 10px 25px; border-radius: 4px; font-weight: bold; cursor: pointer; font-family: 'Arial Black', sans-serif; font-size: 14px; transition: transform 0.1s;">OK</button>
+        </div>
+    </div>
+
+    <!-- MODAL LISTA DE RÁDIOS -->
+    <div id="listModal" class="modal-overlay">
+        <div class="modal-content" style="width: 380px; padding: 25px 15px; display: flex; flex-direction: column;">
+            <button class="modal-close" onclick="closeListModal()">X</button>
+            <h3 id="listModalTitle" style="font-size: 18px; margin-bottom: 15px; color: #ffb300;">Resultados</h3>
+            <div id="stations-loading">Buscando...</div>
+            <div id="stations-list" class="stations-list" style="display: block; width: 100%; box-sizing: border-box;"></div>
+        </div>
+    </div>
+
+    <audio id="audio" crossorigin="anonymous"></audio>
+
+    <script>
+        const audio = document.getElementById('audio');
+        audio.addEventListener('play', () => {
+            closeCassetteIfNeeded();
+        });
+        const playBtn = document.getElementById('playBtn');
+        const mainApp = document.getElementById('mainApp');
+        const needleL = document.getElementById('needleL');
+        const needleR = document.getElementById('needleR');
+        const tapeTitle = document.getElementById('tapeTitle');
+        const stationSelect = document.getElementById('stationSelect');
+        const favBtn = document.getElementById('favBtn');
+
+        let audioCtx, analyser, dataArray, source;
+        let isPlaying = false;
+        let sensitivity = 1.1;
+        let isEjected = false;
+        let ignoreCassetteClicks = false;
+        let favorites = JSON.parse(localStorage.getItem('radioFavorites')) || [];
+
+        let currentStation = { url: '', name: '' };
+
+        function openModal() { document.getElementById('infoModal').classList.add('active'); }
+        function closeModal() { 
+            document.getElementById('infoModal').classList.remove('active'); 
+            ignoreCassetteClicks = true;
+            setTimeout(() => { ignoreCassetteClicks = false; }, 400);
+        }
+
+        function openListModal(title) { 
+            document.getElementById('listModalTitle').innerText = title;
+            document.getElementById('listModal').classList.add('active'); 
+        }
+        function closeListModal() { 
+            document.getElementById('listModal').classList.remove('active'); 
+            ignoreCassetteClicks = true;
+            setTimeout(() => { ignoreCassetteClicks = false; }, 400);
+        }
+
+        function shareApp() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Escute Rádios do Mundo Todo',
+                    text: 'Escute Rádios do Mundo Todo',
+                    url: window.location.origin + window.location.pathname + '?compartilhar'
+                })
+                .then(() => console.log('Compartilhado com sucesso'))
+                .catch((error) => console.log('Erro ao compartilhar', error));
+            } else {
+                const shareUrl = window.location.origin + window.location.pathname;
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    showAlert("Link de compartilhamento copiado para a área de transferência!");
+                }).catch(() => {
+                    showAlert("Copie este link para compartilhar: " + shareUrl);
+                });
+            }
+        }
+
+        function showAlert(msg) {
+            document.getElementById('alertMessage').innerText = msg;
+            document.getElementById('alertModal').classList.add('active');
+        }
+        function closeAlert() { document.getElementById('alertModal').classList.remove('active'); }
+
+        function checkIfFav() {
+            let favBtn = document.getElementById('favBtn');
+            if(!favBtn) return;
+            let isFav = favorites.some(f => f.url === currentStation.url);
+            if (isFav) {
+                favBtn.style.color = '#ffb300';
+                favBtn.style.textShadow = '0 0 8px rgba(255, 179, 0, 0.8)';
+            } else {
+                favBtn.style.color = '#555';
+                favBtn.style.textShadow = 'none';
+            }
+        }
+
+        function toggleFavorite() {
+            if (!currentStation.url) {
+                showAlert("Por favor, sintonize uma rádio primeiro para favoritar!");
+                return;
+            }
+            let currentUrl = currentStation.url;
+            let currentName = currentStation.name;
+            
+            let existingIdx = favorites.findIndex(f => f.url === currentUrl);
+            if (existingIdx >= 0) {
+                favorites.splice(existingIdx, 1);
+            } else {
+                favorites.push({ url: currentUrl, name: currentName });
+            }
+            localStorage.setItem('radioFavorites', JSON.stringify(favorites));
+            checkIfFav();
+            
+            if (stationsList.dataset.mode === 'favs') {
+                showFavoritesList();
+            }
+        }
+
+        function showFavoritesList() {
+            openListModal('Meus Favoritos');
+            stationsList.innerHTML = '';
+            stationsList.style.display = 'block';
+            stationsList.dataset.mode = 'favs';
+            loadingInd.style.display = 'none';
+
+            if (favorites.length === 0) {
+                stationsList.innerHTML = '<div style="color:#aaa; text-align:center; padding:10px; font-size:12px;">Nenhum favorito salvo ainda.</div>';
+                return;
+            }
+
+            favorites.forEach(st => {
+                let card = document.createElement('div');
+                card.className = 'station-card';
+                card.innerHTML = `
+                    <div class="station-info" style="margin-left: 5px;">
+                        <span class="station-name">⭐ ${st.name}</span>
+                    </div>
+                `;
+                card.addEventListener('click', () => {
+                    playNewStation(st.url, st.name);
+                    closeListModal();
+                });
+                stationsList.appendChild(card);
+            });
+        }
+
+        // LÓGICA DE BUSCA GLOBAL DE RÁDIOS (RADIO GARDEN STYLE)
+        const rbBaseUrl = 'https://de1.api.radio-browser.info/json';
+        const countrySelect = document.getElementById('country-select');
+        const categorySelect = document.getElementById('category-select');
+        const searchBtn = document.getElementById('search-stations-btn');
+        const loadingInd = document.getElementById('stations-loading');
+        const stationsList = document.getElementById('stations-list');
+
+        async function fetchGlobalFilters() {
+            try {
+                // Fetch top 60 countries
+                let countriesRes = await fetch(`${rbBaseUrl}/countries?order=stationcount&reverse=true&hidebroken=true&limit=60`);
+                let countries = await countriesRes.json();
+                countries.forEach(c => {
+                    let opt = document.createElement('option');
+                    opt.value = c.name;
+                    opt.text = c.name;
+                    countrySelect.appendChild(opt);
+                });
+
+                // Fetch top 60 categories
+                let tagsRes = await fetch(`${rbBaseUrl}/tags?order=stationcount&reverse=true&hidebroken=true&limit=60`);
+                let tags = await tagsRes.json();
+                tags.forEach(t => {
+                    let opt = document.createElement('option');
+                    opt.value = t.name;
+                    opt.text = t.name.toUpperCase();
+                    categorySelect.appendChild(opt);
+                });
+            } catch(e) {
+                console.error("Erro ao carregar filtros globais:", e);
+            }
+        }
+
+        searchBtn.addEventListener('click', async () => {
+            openListModal('Rádios Encontradas');
+            stationsList.dataset.mode = 'search';
+            stationsList.style.display = 'none';
+            loadingInd.style.display = 'block';
+            stationsList.innerHTML = '';
+
+            let cFilter = countrySelect.value ? `&country=${encodeURIComponent(countrySelect.value)}` : '';
+            let tFilter = categorySelect.value ? `&tag=${encodeURIComponent(categorySelect.value)}` : '';
+
+            try {
+                let res = await fetch(`${rbBaseUrl}/stations/search?limit=40&order=clickcount&reverse=true&hidebroken=true&is_https=true&lastcheckok=1${cFilter}${tFilter}`);
+                let stations = await res.json();
+
+                loadingInd.style.display = 'none';
+                stationsList.style.display = 'block';
+
+                if (stations.length === 0) {
+                    stationsList.innerHTML = '<div style="color:#aaa; text-align:center; padding:10px; font-size:12px;">Nenhuma rádio encontrada.</div>';
+                    return;
+                }
+
+                stations.forEach(st => {
+                    let card = document.createElement('div');
+                    card.className = 'station-card';
+                    
+                    let imgSrc = st.favicon ? st.favicon : '';
+                    let tagsText = (st.tags || '').split(',').slice(0, 2).join(', ') + ' • ' + (st.country || '');
+                    let stName = st.name || 'Sem Nome';
+                    
+                    card.innerHTML = `
+                        <img src="${imgSrc}" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'40\\' height=\\'40\\' viewBox=\\'0 0 24 24\\' fill=\\'%23444\\'><path d=\\'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-7.5c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z\\'/></svg>'">
+                        <div class="station-info">
+                            <span class="station-name">${stName}</span>
+                            <span class="station-tags">${tagsText}</span>
+                        </div>
+                    `;
+
+                    card.addEventListener('click', () => {
+                        playNewStation(st.url_resolved, stName);
+                        closeListModal();
+                    });
+
+                    stationsList.appendChild(card);
+                });
+            } catch(e) {
+                loadingInd.style.display = 'none';
+                showAlert("Erro ao buscar rádios. Tente novamente.");
+            }
+        });
+        function playNewStation(url, name) {
+            closeCassetteIfNeeded();
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            if(isPlaying) stopTape();
+
+            currentStation = { url: url, name: name };
+            checkIfFav();
+
+            let cleanName = name.trim().substring(0, 25);
+            tapeTitle.innerText = "Sintonizando...";
+            
+            audio.src = url;
+            audio.play().then(() => {
+                isPlaying = true;
+                mainApp.classList.add('playing');
+                tapeTitle.innerText = cleanName;
+            }).catch(e => {
+                if (e.name === 'AbortError') return;
+                
+                setTimeout(() => {
+                    if (audio.paused && audio.readyState === 0) {
+                        showAlert("O sinal desta rádio está muito fraco ou fora do ar. Tente outra!");
+                        stopTape();
+                        tapeTitle.innerText = "OFFLINE";
+                    }
+                }, 4000);
+            });
+        }
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                analyser = audioCtx.createAnalyser();
+                source = audioCtx.createMediaElementSource(audio);
+
+                // Cadeia: Som -> Analisador -> Saída
+                source.connect(analyser);
+                analyser.connect(audioCtx.destination);
+
+                analyser.fftSize = 64;
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                renderVU();
+            }
+        }
+
+        function playRadio() {
+            closeCassetteIfNeeded();
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (isPlaying) return;
+            
+            if (!audio.src || audio.src === window.location.href) {
+                if(!currentStation.url) {
+                    showAlert("Por favor, sintonize uma rádio na Busca Global primeiro!");
+                    return;
+                }
+                audio.src = currentStation.url;
+            }
+            
+            tapeTitle.innerText = "Sintonizando...";
+            
+            audio.play().then(() => {
+                isPlaying = true;
+                mainApp.classList.add('playing');
+                tapeTitle.innerText = currentStation.name.trim().substring(0, 25);
+            }).catch(e => {
+                if (e.name === 'AbortError') return;
+                setTimeout(() => {
+                    if (audio.paused && audio.readyState === 0) {
+                        showAlert("O sinal desta rádio está muito fraco ou fora do ar. Tente outra!");
+                        stopTape();
+                        tapeTitle.innerText = "OFFLINE";
+                    }
+                }, 4000);
+            });
+        }
+
+        function stopTape() {
+            if (!isPlaying) return;
+            audio.pause(); audio.src = ""; isPlaying = false;
+            mainApp.classList.remove('playing');
+            needleL.style.transform = `rotate(-48deg)`;
+            needleR.style.transform = `rotate(-48deg)`;
+            tapeTitle.innerText = "SELECIONE OU SINTONIZAR ABAIXO";
+        }
+
+        function closeApp() {
+            stopTape();
+            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+                window.Capacitor.Plugins.App.exitApp();
+            } else if (navigator.app && navigator.app.exitApp) {
+                navigator.app.exitApp();
+            } else {
+                window.close();
+                setTimeout(() => {
+                    showAlert("Para fechar o aplicativo no navegador, feche esta aba ou janela.");
+                }, 300);
+            }
+        }
+
+        function toggleEject() {
+            if (ignoreCassetteClicks) return;
+            const slot = document.getElementById('cassetteSlot');
+            if (!slot) return;
+            isEjected = !isEjected;
+            if (isEjected) {
+                slot.classList.add('ejected');
+                if (isPlaying) {
+                    stopTape();
+                }
+            } else {
+                slot.classList.remove('ejected');
+            }
+        }
+
+        function closeCassetteIfNeeded() {
+            isEjected = false;
+            const slot = document.getElementById('cassetteSlot');
+            if (slot) {
+                slot.classList.remove('ejected');
+            }
+            // Evita cliques duplos ou cliques-fantasma logo após fechar
+            ignoreCassetteClicks = true;
+            setTimeout(() => {
+                ignoreCassetteClicks = false;
+            }, 400);
+        }
+
+        function renderVU() {
+            if (isPlaying) {
+                analyser.getByteFrequencyData(dataArray);
+                let avg = (dataArray.reduce((a, b) => a + b) / dataArray.length);
+                let angle = ((avg * sensitivity * 0.8) / 120) * 90 - 48;
+                needleL.style.transform = `rotate(${Math.min(48, Math.max(-48, angle))}deg)`;
+                needleR.style.transform = `rotate(${Math.min(48, Math.max(-48, angle * 1.05))}deg)`;
+            }
+            requestAnimationFrame(renderVU);
+        }
+
+        document.querySelectorAll('input[name="sens"]').forEach(radio => {
+            radio.addEventListener('change', (e) => sensitivity = parseFloat(e.target.value));
+        });
+
+        document.getElementById('volReduce').addEventListener('change', (e) => {
+            audio.volume = e.target.checked ? 0.3 : 1.0;
+        });
+
+        // Controle da Cor da Luz do VU (3 Posições: Âmbar, Vermelho, Azul)
+        const vuColorRadios = document.querySelectorAll('input[name="vuColor"]');
+        const vuMeters = document.querySelectorAll('.vu-meter');
+
+        function updateVUColor(color) {
+            const body = document.body;
+            
+            // Remove as classes antigas
+            vuMeters.forEach(meter => {
+                meter.classList.remove('vu-red', 'vu-blue');
+            });
+            body.classList.remove('vu-red-active', 'vu-blue-active');
+            
+            // Adiciona a classe da cor correspondente
+            if (color === 'red') {
+                vuMeters.forEach(meter => meter.classList.add('vu-red'));
+                body.classList.add('vu-red-active');
+            } else if (color === 'blue') {
+                vuMeters.forEach(meter => meter.classList.add('vu-blue'));
+                body.classList.add('vu-blue-active');
+            }
+            
+            localStorage.setItem('vuColor', color);
+        }
+
+        if (vuColorRadios.length > 0) {
+            vuColorRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        updateVUColor(e.target.value);
+                    }
+                });
+            });
+            
+            // Inicializar cor do VU sempre em Âmbar (posição superior) no carregamento
+            const defaultRadio = document.getElementById('colorAmber');
+            if (defaultRadio) {
+                defaultRadio.checked = true;
+                updateVUColor('amber');
+            }
+        }
+
+        // Lógica de Anúncios Reais (Capacitor AdMob) e Simulação
+        let adMobInitialized = false;
+
+        async function initAdMobNative() {
+            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AdMob) {
+                const { AdMob } = window.Capacitor.Plugins;
+                try {
+                    await AdMob.initialize({
+                        requestTrackingAuthorization: true
+                    });
+                    adMobInitialized = true;
+                    
+                    const savedState = localStorage.getItem('adSimulationActive');
+                    const isActive = savedState === null || savedState === 'true';
+                    if (isActive) {
+                        showRealAdMobBanner();
+                    }
+                } catch (e) {
+                    console.warn("Falha ao inicializar AdMob nativo:", e);
+                }
+            }
+        }
+
+        async function showRealAdMobBanner() {
+            if (!adMobInitialized) return;
+            const { AdMob } = window.Capacitor.Plugins;
+            try {
+                // Oculta o banner de simulação local, pois usaremos o nativo do AdMob
+                const mockup = document.getElementById('admobBanner');
+                if (mockup) mockup.style.display = 'none';
+
+                await AdMob.showBanner({
+                    adId: 'ca-app-pub-3940256099942544/6300978111', // ID de Teste Padrão do Google
+                    adSize: 'BANNER',
+                    position: 'BOTTOM_CENTER',
+                    margin: 0,
+                    isTesting: true // Mudar para false ao compilar para produção
+                });
+            } catch (e) {
+                console.error("Erro ao mostrar banner nativo:", e);
+            }
+        }
+
+        async function hideRealAdMobBanner() {
+            if (!adMobInitialized) return;
+            const { AdMob } = window.Capacitor.Plugins;
+            try {
+                await AdMob.hideBanner();
+            } catch (e) {
+                console.error("Erro ao ocultar banner nativo:", e);
+            }
+        }
+
+        function toggleAdSimulation(active) {
+            const body = document.body;
+            const toggleCheckbox = document.getElementById('toggleAdSim');
+            
+            if (active) {
+                body.classList.add('admob-active');
+                if (toggleCheckbox) toggleCheckbox.checked = true;
+                localStorage.setItem('adSimulationActive', 'true');
+                
+                // Se estiver rodando dentro do app nativo (Capacitor), ativa o AdMob real
+                if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AdMob) {
+                    showRealAdMobBanner();
+                } else {
+                    // No navegador normal, garante que o mockup siga a regra do CSS
+                    const mockup = document.getElementById('admobBanner');
+                    if (mockup) mockup.style.display = '';
+                }
+            } else {
+                body.classList.remove('admob-active');
+                if (toggleCheckbox) toggleCheckbox.checked = false;
+                localStorage.setItem('adSimulationActive', 'false');
+                
+                // Oculta o AdMob nativo
+                if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AdMob) {
+                    hideRealAdMobBanner();
+                }
+            }
+        }
+
+        function closeAdBannerSim() {
+            toggleAdSimulation(false);
+        }
+
+        function initAdSimulation() {
+            const savedState = localStorage.getItem('adSimulationActive');
+            let isActive;
+            if (savedState !== null) {
+                isActive = savedState === 'true';
+            } else {
+                // Primeira visualização: Ativo automaticamente apenas no localhost/127.0.0.1 para desenvolvimento
+                const isLocal = window.location.hostname === 'localhost' || 
+                                window.location.hostname === '127.0.0.1' || 
+                                window.location.hostname === '';
+                isActive = isLocal;
+            }
+            toggleAdSimulation(isActive);
+            // Tenta inicializar o AdMob nativo se estiver no Capacitor
+            initAdMobNative();
+        }
+
+        window.onload = () => {
+            fetchGlobalFilters();
+            initAdSimulation();
+        };
+
+        // PWA Setup & Detector de Atualização
+        let newWorkerWaiting;
+        
+        function showUpdatePrompt(registration) {
+            newWorkerWaiting = registration.waiting;
+            const updateModal = document.getElementById('updateModal');
+            if (updateModal) {
+                updateModal.classList.add('active');
+            }
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    console.log('SW registered');
+                    
+                    // Se já existir um service worker esperando ativação
+                    if (reg.waiting) {
+                        showUpdatePrompt(reg);
+                    }
+
+                    // Monitora novas atualizações enquanto o app está aberto
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showUpdatePrompt(reg);
+                            }
+                        });
+                    });
+                });
+
+                // Recarrega automaticamente a página quando o novo SW assume o controle
+                let refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (!refreshing) {
+                        window.location.reload();
+                        refreshing = true;
+                    }
+                });
+            });
+        }
+
+        // Ação do botão do modal de atualização
+        function triggerAppUpdate() {
+            if (newWorkerWaiting) {
+                newWorkerWaiting.postMessage({ action: 'skipWaiting' });
+            } else {
+                window.location.reload();
+            }
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').style.display = 'block';
+            let topBtn = document.getElementById('installBtnTop');
+            if(topBtn) topBtn.style.display = 'block';
+        });
+
+        function installPWA() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            
+            if (isStandalone) {
+                showAlert("Este aplicativo já está instalado e rodando na sua tela inicial!");
+                return;
+            }
+
+            if (deferredPrompt) {
+                showAlert("Abrindo o assistente de instalação... Confirme no prompt do seu navegador!");
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        document.getElementById('installBtn').style.display = 'none';
+                        let topBtn = document.getElementById('installBtnTop');
+                        if(topBtn) topBtn.style.display = 'none';
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // Identifica se é iOS/Safari
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                
+                if (isIOS || isSafari) {
+                    showAlert("Para instalar no seu iPhone/iPad:\n\n1. Toque no ícone de Compartilhar (seta para cima no rodapé do Safari) 📤\n2. Role a lista para baixo e toque em 'Adicionar à Tela de Início' 📱");
+                } else {
+                    showAlert("O instalador automático ainda está carregando ou o app já está instalado.\n\nVocê também pode instalar clicando no ícone de instalação na barra de endereços (computador com seta para baixo) ou no menu de opções do navegador (três pontos no topo direito) selecionando 'Instalar aplicativo' ou 'Adicionar à tela inicial'.");
+                }
+            }
+        }
+    </script>
+
+    <!-- ADMOB SIMULATED BANNER -->
+    <div id="admobBanner" class="admob-banner-placeholder">
+        <div class="admob-badge">Ad</div>
+        <div class="admob-text">Anúncio de Teste • Google AdMob (320x50)</div>
+        <button class="admob-close" onclick="closeAdBannerSim()" title="Fechar Simulação">×</button>
+    </div>
+
+    <!-- MODAL ATUALIZAÇÃO PWA (FORCE UPDATE) -->
+    <div id="updateModal" class="modal-overlay">
+        <div class="modal-content" style="width: 320px; padding: 30px 20px; border-color: #ffb300; box-shadow: 0 0 30px rgba(255, 179, 0, 0.2), inset 0 0 20px rgba(0,0,0,0.9);">
+            <h3 style="font-size: 24px; color: #ffb300; text-shadow: 1px 1px 2px #000; letter-spacing: 2px;">ATUALIZAÇÃO</h3>
+            <p style="font-size: 15px; margin-top: 20px; line-height: 1.5; color: #eee; text-align: center;">
+                Uma nova versão do EngelMobile Radio está disponível com novos recursos e correções!
+            </p>
+            <button id="updateAppBtn" onclick="triggerAppUpdate()" style="margin-top: 25px; background: #ffb300; color: #111; border: none; padding: 12px 30px; border-radius: 4px; font-weight: bold; cursor: pointer; font-family: 'Arial Black', sans-serif; font-size: 14px; transition: transform 0.1s; box-shadow: 0 4px 10px rgba(255, 179, 0, 0.3); width: 100%; text-transform: uppercase;">ATUALIZAR AGORA</button>
+        </div>
+    </div>
+</body>
+</html>
