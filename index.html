@@ -2021,11 +2021,11 @@
                 if (mockup) mockup.style.display = 'none';
 
                 await AdMob.showBanner({
-                    adId: 'ca-app-pub-3940256099942544/6300978111', // ID de Teste Padrão do Google
+                    adId: 'ca-app-pub-6069816460027999/3685198362', // ID Real da sua Conta AdMob
                     adSize: 'BANNER',
                     position: 'BOTTOM_CENTER',
                     margin: 0,
-                    isTesting: true // Mudar para false ao compilar para produção
+                    isTesting: false // false para exibir anúncios reais
                 });
             } catch (e) {
                 console.error("Erro ao mostrar banner nativo:", e);
